@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Search Engine</title>
+</head>
+<body>
+    <h1>Simple Search Engine</h1>
+    <input type="text" id="searchInput" placeholder="Search for an item">
+    <button onclick="searchItems()">Search</button>
+    <ul id="searchResults"></ul>
+
+    <script>
+        async function searchItems() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = ''; // Reset results
+
+            try {
+                // Fetch the CSV file
+                const response = await fetch('items.csv'); // Ensure 'items.csv' is in the same directory
+                const data = await response.text();
+
+                // Parse the CSV data (assuming single-line, comma-separated values)
+                const items = data.split(',');
+
+                // Filter items based on search input
+                const filteredItems = items.filter(item => item.toLowerCase().includes(searchInput));
+
+                // Display results
+                if (filteredItems.length > 0) {
+                    filteredItems.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = item.trim();
+                        searchResults.appendChild(li);
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = 'No matches found.';
+                    searchResults.appendChild(li);
+                }
+            } catch (error) {
+                console.error('Error fetching or processing the CSV file:', error);
+                const li = document.createElement('li');
+                li.textContent = 'Error loading data. Please try again later.';
+                searchResults.appendChild(li);
+            }
+        }
+    </script>
+</body>
+</html>
